@@ -1,0 +1,113 @@
+```public static int [][] meanFilter( int[][] f)
+        {
+        	int size=9;//mean sample size
+        	int[][] w= new int[size][size];
+        	int i,j;
+        	
+        	//creating equal weight values for all neighbour pixels
+        	for(i=0;i<size;i++) {
+    			
+    			for(j=0;j<size;j++) {
+    				w[i][j]=1;
+    			}
+    		}
+        	
+        	//creating limit values for each
+        	int a=(w.length-1)/2;
+        	int b=(w.length-1)/2;
+        	
+        	//creating padded version of f image
+        	int[][] f_padded= new int[2*a+f.length][2*b+f[0].length];
+        	int[][] F=new int[f.length][f[0].length];
+        	
+        	for( int x=0; x<f.length;x++)
+                for(int y=0;y<f[0].length;y++)
+                {
+                    f_padded[a+x][b+y]=f[x][y];
+                }
+        	
+        	//actual mean filter
+        	for( int x=0; x<F.length;x++)
+                for(int y=0;y<F[0].length;y++)
+                {
+	                for(int s=-a;s<=a;s++)
+	                {
+	                	for(int t=-b;t<=b;t++)
+	                	{
+	                		int v=w[s+a][t+b];
+	                		//creating the sum of all values within the mean sample
+	                		F[x][y]=F[x][y]+v*f_padded[(a+x)-s][(b+y)-t];
+	                		
+	                	}
+	                }
+	                //finding the mean value for each pixel
+	                F[x][y]=F[x][y]/(size*size);
+                }
+        	return F;
+        }
+        
+        
+        public static int [][] medianFilter( int[][] f)
+        {
+        	int w =3;	//median size
+        	int i;
+        	
+        	int a=(w-1)/2;
+        	int b=(w-1)/2;
+        	
+        	//creating padded version of f image
+        	int[][] f_padded= new int[2*a+f.length][2*b+f[0].length];
+        	
+        	int[][] F=new int[f.length][f[0].length];
+        	
+        	
+        	
+        	for( int x=0; x<f.length;x++)
+                for(int y=0;y<f[0].length;y++)
+                {
+                    f_padded[a+x][b+y]=f[x][y];
+                }
+        	//creating an array to store the median samples for each pixel
+        	int[] sortArray= new int[w*w];
+        	
+        	//actual median filter
+        	for( int x=0; x<F.length;x++)
+                for(int y=0;y<F[0].length;y++)
+                {
+                	i=0;
+	                for(int s=-a;s<=a;s++)
+	                {
+	                	for(int t=-b;t<=b;t++)
+	                	{
+	                		//storing the median neighbour values to an array to sort
+	                		sortArray[i]=f_padded[(a+x)-s][(b+y)-t];   
+	                		i++;
+	                		
+	                	}
+	                }
+	              //using sort function provided by java to sort the median sample values stored in the array
+	                Arrays.sort(sortArray, 0, 8);
+	                //assigning the mid value of the sorted array that provides the median
+	                F[x][y]=sortArray[(w*w+1)/2];
+	                
+                }
+        	return F;
+        }
+        
+        public static double calculateSNR(int[][] original, int[][] restored) {
+            double num= 0.0;
+            double den = 0.0;
+            double snr;
+
+            int M = original.length;
+            int N = original[0].length;
+
+            for (int x = 0; x < M; x++) {
+                for (int y = 0; y < N; y++) {
+                    num += Math.pow(restored[x][y], 2);
+                    den += Math.pow(restored[x][y] - original[x][y], 2);
+                }
+            }
+            snr= num/den;
+            return snr;
+        }```
